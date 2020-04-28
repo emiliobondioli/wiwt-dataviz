@@ -1,0 +1,26 @@
+@font-face {
+  font-family: "GT America Light";
+  font-display: swap;
+  src: url("./GT-America-Compressed-Light.woff2") format("woff2"),
+    url("./GT-America-Compressed-Light.woff") format("woff");
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GT America Extended";
+  font-display: swap;
+  src: url("./GT-America-Extended-Regular.woff2") format("woff2"),
+    url("./GT-America-Extended-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GT America Expanded";
+  font-display: swap;
+  src: url("./GT-America-Expanded-Medium.woff2") format("woff2"),
+    url("./GT-America-Expanded-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+}

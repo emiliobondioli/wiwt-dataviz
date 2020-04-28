@@ -1,0 +1,8 @@
+module.exports = {
+  minify: true,
+  enableClasses: true,
+  options: [
+    'setClasses',
+    'mq',
+  ]
+}
