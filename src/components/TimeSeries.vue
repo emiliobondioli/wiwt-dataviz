@@ -25,18 +25,18 @@ export default {
     };
   },
   computed: {
-    users() {
+    planets() {
       return this.$store.state.users.map(u => {
         return { ...u, created: new Date(u.created) };
       });
     },
-    pins() {
+    stars() {
       return this.$store.state.pins.map(u => {
         return { ...u, created: new Date(u.created) };
       });
     },
     range() {
-      const sorted = this.users.slice().sort((a, b) => {
+      const sorted = this.planets.slice().sort((a, b) => {
         return a.created - b.created;
       });
       const start = sorted[0].created;
@@ -44,23 +44,23 @@ export default {
       const range = d3.timeHour.range(start, end, STEPS);
       return range;
     },
-    userTimeSeries() {
-      const userSeries = this.range.map((d, i) => {
+    planetTimeSeries() {
+      const planetSeries = this.range.map((d, i) => {
         return {
           date: d,
-          value: this.users.filter(u => u.created - d <= 0).length
+          value: this.planets.filter(u => u.created - d <= 0).length
         };
       });
-      return userSeries;
+      return planetSeries;
     },
-    pinTimeSeries() {
-      const pinSeries = this.range.map((d, i) => {
+    starTimeSeries() {
+      const starSeries = this.range.map((d, i) => {
         return {
           date: d,
-          value: this.pins.filter(p => p.created - d <= 0).length
+          value: this.stars.filter(p => p.created - d <= 0).length
         };
       });
-      return pinSeries;
+      return starSeries;
     }
   },
   mounted() {
@@ -70,9 +70,9 @@ export default {
     highlight(e) {
       this.highlighted = e.id;
       const values =
-        e.id === "users" ? this.userTimeSeries : this.pinTimeSeries;
+        e.id === "planets" ? this.planetTimeSeries : this.starTimeSeries;
       const x = this.scaleX.invert(d3.mouse(d3.event.target)[0]);
-      const i = this.bisectDate(values, x, 1) - 1;
+      const i = this.bisectDate(values, x, 1);
       this.tooltip = {
         x: d3.event.x,
         y: d3.event.y,
@@ -97,8 +97,8 @@ export default {
     },
     createGraph() {
       const colors = {
-        users: "#02E19F",
-        pins: "#373540"
+        planets: "#02E19F",
+        stars: "#373540"
       };
 
       this.bisectDate = d3.bisector(function(d) {
@@ -106,8 +106,8 @@ export default {
       }).left;
 
       const sources = [
-        { values: this.userTimeSeries, id: "users" },
-        { values: this.pinTimeSeries, id: "pins" }
+        { values: this.planetTimeSeries, id: "planets" },
+        { values: this.starTimeSeries, id: "stars" }
       ];
 
       const dimensions = this.$refs.graph.getBoundingClientRect();
@@ -125,7 +125,7 @@ export default {
       const x = d3
         .scaleTime()
         .domain(
-          d3.extent(this.userTimeSeries, function(d) {
+          d3.extent(this.planetTimeSeries, function(d) {
             return d.date;
           })
         )
@@ -140,7 +140,7 @@ export default {
         .scaleLinear()
         .domain([
           0,
-          d3.max(this.userTimeSeries, function(d) {
+          d3.max(this.planetTimeSeries, function(d) {
             return d.value;
           }) + 50
         ])
@@ -223,25 +223,25 @@ export default {
 }
 .highlighted {
   .area {
-    &.users,
-    &.pins {
+    &.planets,
+    &.stars {
       fill: #2b2937;
     }
   }
-  &.users svg .area.users {
+  &.planets svg .area.planets {
     fill: rgba($col-green, 1);
   }
-  &.pins svg .area.pins {
+  &.stars svg .area.stars {
     fill: rgba(#00b27e, 1);
   }
 }
 .area {
   stroke-width: 0;
-  &.users {
+  &.planets {
     stroke: $col-green;
     fill: rgba($col-green, 1);
   }
-  &.pins {
+  &.stars {
     stroke: $col-white;
     fill: rgba(#00b27e, 1);
   }

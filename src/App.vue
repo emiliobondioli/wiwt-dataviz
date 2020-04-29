@@ -55,6 +55,12 @@ export default {
   background-color: $col-dark;
 }
 
+.container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
 .container > footer {
   width: 100%;
   position: fixed;
@@ -79,7 +85,6 @@ export default {
     fill: $col-white;
   }
 }
-.container,
 .loader {
   width: 100%;
   height: 100%;
