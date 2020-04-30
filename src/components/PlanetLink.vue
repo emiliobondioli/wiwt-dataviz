@@ -1,45 +1,45 @@
 <template>
-  <div class="link">
+  <div class="planet-link">
     <div class="start">
       <img src="@/assets/icons/bubble.svg" svg-inline />
-      <p>{{ planet.coordinates }}</p>
+      <p>
+        <span class="city" v-if="city">{{ city }},</span>
+        <span class="country" v-if="city">{{country}}</span>
+      </p>
     </div>
   </div>
 </template>
 
 <script>
-import { getLocation } from "@/utils";
-
 export default {
   name: "PlanetLink",
   props: {
-    user: {
+    planet: {
       type: Object,
       required: true
     }
   },
   data() {
     return {
-      start,
-      end
+      start: null,
+      end: null
     };
   },
   computed: {
     pin() {
-      return this.$store.getters.getUserPin(this.user.id);
+      return this.$store.getters.getUserPin(this.planet.id);
+    },
+    city() {
+      if (!this.planet.city || this.planet.city === "#notfound") return "";
+      return this.planet.city;
+    },
+    country() {
+      if (!this.planet.country || this.planet.country === "#notfound")
+        return "";
+      return this.planet.country;
     }
   },
-  mounted() {
-    getLocation(this.user.coordinates).then(r => {
-      this.start = r;
-    });
-
-    if (this.pin) {
-      getLocation(this.pin.coordinates).then(r => {
-        this.end = r;
-      });
-    }
-  }
+  mounted() {}
 };
 </script>
 
