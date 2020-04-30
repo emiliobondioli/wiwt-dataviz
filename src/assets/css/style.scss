@@ -25,6 +25,11 @@ body {
   color: $col-white;
 }
 
+.view {
+  height: 100%;
+  overflow: auto;
+}
+
 p,
 h2 {
   margin: 0;
