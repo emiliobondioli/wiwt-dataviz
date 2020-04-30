@@ -7,7 +7,7 @@
           <label class="name">.{{planet.name || 'anonymous'}}</label>
           <p class="date">{{planet.created | formatTime}}</p>
         </div>
-        <PlanetLink />
+        <PlanetLink :planet="planet" />
       </li>
     </ul>
     <div class="blur bottom"></div>
@@ -15,10 +15,11 @@
 </template>
 
 <script>
-import PlanetLink from '@/components/PlanetLink'
+import PlanetLink from "@/components/PlanetLink";
 import moment from "moment";
 
 export default {
+  components: { PlanetLink },
   data() {
     return {};
   },
@@ -51,6 +52,9 @@ export default {
   position: relative;
   ul {
     padding: 1rem;
+    @media screen and (max-width: 360px) {
+      padding: 0rem;
+    }
     height: 200px;
     overflow: auto;
     margin: 0;
@@ -59,10 +63,13 @@ export default {
       padding: 1rem 0;
       border-bottom: 1px solid $col-darkgray;
       .info {
-        width: 10rem;
+        width: 8rem;
         label {
           color: $col-green;
         }
+      }
+      .planet-link {
+        flex: 1;
       }
     }
   }
@@ -73,10 +80,10 @@ export default {
     width: 100%;
     position: absolute;
     left: 0;
-    top: 0;
+    top: -2px;
     &.bottom {
       top: unset;
-      bottom: 0;
+      bottom: -2px;
       background: linear-gradient(to top, $col-dark, rgba($col-dark, 0));
     }
   }

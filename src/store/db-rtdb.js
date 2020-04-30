@@ -12,13 +12,13 @@ const pinsRef = db.ref('pins')
 function prepareUser(context, snap) {
     const user = snap.val()
     user.id = snap.key
-    user.created = user.created
+    user.created = new Date(user.created)
     return user
 }
 function preparePin(context, snap) {
     const pin = snap.val()
     pin.id = snap.key
-    pin.created = pin.created
+    pin.created = new Date(pin.created)
     pin.user = context.getters.getUser(pin.user)
     return pin
 }

@@ -48,22 +48,33 @@ export default {
     this.bisectDate = d3.bisector(function(d) {
       return d.date;
     }).left;
-    this.yDomain = d3.max(this.planetsTimeSeries, function(d) {
-      return d.value;
-    })+10;
+    this.yDomain =
+      d3.max(this.planetsTimeSeries, function(d) {
+        return d.value;
+      }) + 10;
     this.createGraph();
+    window.addEventListener("resize", this.updateGraph.bind(this));
   },
   methods: {
+    updateGraph() {
+      if (!this.$refs.graph) return;
+      const bounds = this.$refs.graph.getBoundingClientRect();
+      this.svg.attr("width", bounds.width).attr("height", bounds.height + 100);
+    },
     highlight(e) {
       const bounds = this.$el.getBoundingClientRect();
       this.highlighted = e.id;
       const values =
         e.id === "planets" ? this.planetsTimeSeries : this.starsTimeSeries;
       const mouse = d3.mouse(d3.event.target);
-      const x = this.scaleX.invert(mouse[0]);
-      const i = this.bisectDate(values, x, 1);
+      const scaledX = this.scaleX.invert(mouse[0]);
+      const i = this.bisectDate(values, scaledX, 1);
+      const eventX = d3.event.x || d3.event.touches[0].clientX;
+      let x = eventX - bounds.x;
+      if (x + 84 > window.innerWidth) x -= 84;
       this.tooltip = {
-        x: d3.event.x - bounds.x,
+        x,
+        y: this.width > 360 ? 0 : this.height,
         y: 0,
         value: values[i].value,
         label: e.id,
@@ -76,7 +87,7 @@ export default {
       };
       const y = this.scaleY(values[i].value);
       this.cursor = {
-        x: d3.event.x - bounds.x,
+        x: eventX - bounds.x,
         y: 0
       };
       d3.event.stopPropagation();
@@ -105,11 +116,14 @@ export default {
         .append("svg")
         .attr("width", dimensions.width)
         .attr("height", dimensions.height + 100)
-        .append("g")
-        .attr("transform", "translate(10,0)");
-      const container = svg.append("g").attr("class", "container");
+        .attr("preserveAspectRatio", "xMaxYMin meet")
+        .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height + 100}`);
+      this.svg = svg;
 
-      this.createAxes(svg);
+      const graph = svg.append("g").attr("transform", "translate(10,0)");
+      const container = graph.append("g").attr("class", "container");
+
+      this.createAxes(graph);
 
       const area = d3
         .area()
@@ -131,7 +145,10 @@ export default {
           return area(d.values);
         })
         .on("mousemove", this.highlight)
-        .on("mouseleave", this.disableHighlight);
+        .on("mouseleave", this.disableHighlight)
+        .on("touchstart", this.highlight)
+        .on("touchmove", this.highlight)
+        .on("touchend", this.disableHighlight);
     },
     createScales() {
       const x = d3
@@ -141,7 +158,7 @@ export default {
             return d.date;
           })
         )
-        .range([0, this.width - 100]);
+        .range([0, this.width]);
       this.scaleX = x;
 
       const y = d3
@@ -164,6 +181,9 @@ export default {
   position: relative;
   .graph {
     height: 200px;
+    @media screen and (max-width: 360px) {
+      height: 140px;
+    }
     color: $col-white;
   }
   .overlay {
@@ -210,6 +230,9 @@ export default {
       stroke-dasharray: 4;
     }
     text {
+      @media screen and (max-width: 360px) {
+        display: none;
+      }
       fill: $col-darkgray;
     }
   }

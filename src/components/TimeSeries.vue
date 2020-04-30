@@ -47,21 +47,30 @@ export default {
         return d.value;
       }) + 25;
     this.createGraph();
-    console.log(this.planetsTimeSeries)
+    window.addEventListener("resize", this.updateGraph.bind(this));
   },
   methods: {
+    updateGraph() {
+      if (!this.$refs.graph) return;
+      const bounds = this.$refs.graph.getBoundingClientRect();
+      this.svg.attr("width", bounds.width).attr("height", bounds.height + 100);
+    },
     highlight(e) {
       const bounds = this.$el.getBoundingClientRect();
       this.highlighted = e.id;
       const values =
         e.id === "planets" ? this.planetsTimeSeries : this.starsTimeSeries;
       const mouse = d3.mouse(d3.event.target);
-      const x = this.scaleX.invert(mouse[0]);
-      const i = this.bisectDate(values, x, 1);
+      const scaledX = this.scaleX.invert(mouse[0]);
+      const i = this.bisectDate(values, scaledX, 1);
+      const eventX = d3.event.x || d3.event.touches[0].clientX;
+      let x = eventX - bounds.x;
+      if (x + 84 > window.innerWidth) x -= 84;
+      const value = values[i] ? values[i].value : values[i - 1].value;
       this.tooltip = {
-        x: d3.event.x - bounds.x,
+        x,
         y: 0,
-        value: values[i].value,
+        value,
         label: e.id,
         time: x.toLocaleString("default", {
           month: "short",
@@ -70,9 +79,9 @@ export default {
           hour12: true
         })
       };
-      const y = this.scaleY(values[i].value);
+      const y = this.scaleY(value);
       this.cursor = {
-        x: d3.event.x - bounds.x,
+        x: eventX - bounds.x,
         y: 0
       };
       d3.event.stopPropagation();
@@ -101,11 +110,15 @@ export default {
         .append("svg")
         .attr("width", dimensions.width)
         .attr("height", dimensions.height + 100)
-        .append("g")
-        .attr("transform", "translate(10,0)");
-      const container = svg.append("g").attr("class", "container");
+        .attr("preserveAspectRatio", "xMaxYMin meet")
+        .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height + 100}`);
 
-      this.createAxes(svg);
+      this.svg = svg;
+
+      const graph = svg.append("g").attr("transform", "translate(10,0)");
+      const container = graph.append("g").attr("class", "container");
+
+      this.createAxes(graph);
 
       const area = d3
         .area()
@@ -127,7 +140,10 @@ export default {
           return area(d.values);
         })
         .on("mousemove", this.highlight)
-        .on("mouseleave", this.disableHighlight);
+        .on("mouseleave", this.disableHighlight)
+        .on("touchstart", this.highlight)
+        .on("touchmove", this.highlight)
+        .on("touchend", this.disableHighlight);
     },
     createScales() {
       const x = d3
@@ -137,7 +153,7 @@ export default {
             return d.date;
           })
         )
-        .range([0, this.width - 100]);
+        .range([0, this.width]);
       this.scaleX = x;
 
       const y = d3
@@ -158,8 +174,15 @@ export default {
 <style lang="scss">
 .time-series {
   position: relative;
+  svg {
+    width: 100%;
+  }
   .graph {
     height: 300px;
+    @media screen and (max-width: 360px) {
+      height: 200px;
+    }
+    width: 100%;
     color: $col-white;
   }
   .overlay {
@@ -178,8 +201,9 @@ export default {
   .tooltip {
     margin-top: 1rem;
     margin-left: 0;
-    padding: .5rem;
+    padding: 0.5rem;
     background-color: $col-dark;
+    min-width: 7rem;
     label {
       color: $col-green;
       text-transform: uppercase;
@@ -201,11 +225,15 @@ export default {
   .tick {
     font-family: "GT America Compressed Light", Arial, Helvetica, sans-serif;
     font-size: 0.9rem;
+    pointer-events: none;
     line {
       stroke: rgba($col-darkgray, 0.4);
       stroke-dasharray: 4;
     }
     text {
+      @media screen and (max-width: 360px) {
+        display: none;
+      }
       fill: $col-darkgray;
     }
   }

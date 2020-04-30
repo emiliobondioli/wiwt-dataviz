@@ -24,7 +24,7 @@
           <img src="@/assets/icons/star-planet.svg" class="category-icon" />
         </p>
         <p class="value expa-large">{{starsPerPlanet}}</p>
-        <label class="exte-small">STARS/PLANET</label>
+        <label class="exte-small">STARS / PLANET</label>
       </section>
     </div>
   </div>
@@ -51,7 +51,7 @@ export default {
   display: flex;
   margin-bottom: 2rem;
   .category-icon {
-    width: 3rem;
+    height: 3rem;
   }
   & > div {
     flex: 1;
@@ -69,6 +69,7 @@ export default {
       display: block;
       margin: 0.5rem 0;
       padding-bottom: 0.5rem;
+      text-align: center;
     }
   }
 }

@@ -23,7 +23,13 @@ import GrowthStream from "@/components/GrowthStream";
 
 export default {
   name: "Home",
-  components: { Loader: SingleLoader, TimeSeries, TotalCallouts, LatestUsers, GrowthStream },
+  components: {
+    Loader: SingleLoader,
+    TimeSeries,
+    TotalCallouts,
+    LatestUsers,
+    GrowthStream
+  },
   computed: {
     ready() {
       return this.$store.state.ready;
@@ -36,9 +42,13 @@ export default {
 .home {
   padding: 2rem;
   width: 100%;
+  overflow-x: hidden;
 }
 .callouts {
   width: 50%;
+  @media screen and (max-width: 360px) {
+    width: 100%;
+  }
   margin: 0 auto;
 }
 .time-series {
@@ -48,10 +58,13 @@ export default {
   text-align: center;
   margin-bottom: 2rem;
   h1 {
-    margin-bottom: 0.5rem;
+    margin: 0.5rem 0;
   }
   p {
     width: 70%;
+    @media screen and (max-width: 360px) {
+      width: 100%;
+    }
     margin: 0 auto;
   }
 }

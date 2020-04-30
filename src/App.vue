@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     init() {
-      this.loaded = true
+      this.loaded = true;
     },
     includeGmapsScript() {
       if (document.getElementsByClassName("gm-src").length)
@@ -71,6 +71,7 @@ export default {
 }
 
 .container {
+  overflow: hidden;
   height: 100%;
   width: 100%;
 }
