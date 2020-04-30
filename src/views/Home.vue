@@ -8,8 +8,8 @@
     <TimeSeries />
     <h2>New users this week</h2>
     <div class="row">
-      <LatestUsers class="col-4" />
-      <GrowthStream class="col-8" />
+      <LatestUsers />
+      <GrowthStream class="col-fill" />
     </div>
   </div>
 </template>
@@ -42,7 +42,7 @@ export default {
 .home {
   padding: 2rem;
   width: 100%;
-  overflow-x: hidden;
+  overflow: visible;
 }
 .callouts {
   width: 50%;
