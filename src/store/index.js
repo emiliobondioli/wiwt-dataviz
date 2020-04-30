@@ -26,6 +26,14 @@ const vuex = new Vuex.Store({
     },
     SET_READY(state, data) {
       state.ready = data
+    },
+    SET_PLANET(state, data) {
+      const p = state.planets.find(p => p.id === data.id)
+      if (p) Vue.set(state.planets, state.planets.indexOf(p), data)
+    },
+    SET_STAR(state, data) {
+      const p = state.planets.find(p => p.id === data.id)
+      if (p) Vue.set(state.planets, state.planets.indexOf(p), data)
     }
   },
 
@@ -51,12 +59,9 @@ const vuex = new Vuex.Store({
       if (id.includes('/')) id = ref.split('/')[1]
       return state.planets.find(planet => planet.id === id)
     },
-    range: (state) => (steps) => {
-      const sorted = state.planets.slice().sort((a, b) => {
-        return a.created - b.created;
-      });
-      const start = sorted[0].created;
-      const end = sorted[sorted.length - 1].created;
+    range: (state, getters) => (steps) => {
+      const start = state.planets[0].created;
+      const end = state.planets[state.planets.length - 1].created;
       const range = d3.timeHour.range(start, end, steps);
       return range;
     },

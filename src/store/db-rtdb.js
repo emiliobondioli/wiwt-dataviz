@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/database'
 import 'firebase/auth'
 import { firebaseDevConfig, firebaseProdConfig } from './config.js'
+import { sortByDate } from '@/utils'
 
 const config = firebaseProdConfig
 export const db = firebase.initializeApp(config).database()
@@ -11,13 +12,13 @@ const pinsRef = db.ref('pins')
 function prepareUser(context, snap) {
     const user = snap.val()
     user.id = snap.key
-    user.created = new Date(user.created)
+    user.created = user.created
     return user
 }
 function preparePin(context, snap) {
     const pin = snap.val()
     pin.id = snap.key
-    pin.created = new Date(pin.created)
+    pin.created = pin.created
     pin.user = context.getters.getUser(pin.user)
     return pin
 }
@@ -57,7 +58,7 @@ export const store = {
                     const user = prepareUser(context, s)
                     users.push(user)
                 });
-                context.commit('SET_PLANETS', users)
+                context.commit('SET_PLANETS', sortByDate(users))
             })
         },
         getPins: context => {
@@ -67,8 +68,41 @@ export const store = {
                     const pin = preparePin(context, s)
                     pins.push(pin)
                 });
-                context.commit('SET_STARS', pins)
+                context.commit('SET_STARS', sortByDate(pins))
             })
-        }
+        },
+        updateUser: (context, user) => {
+            const id = user.id
+            const u = {
+                coordinates: user.coordinates,
+                name: user.name,
+                created: new Date(user.created).toISOString(),
+                city: user.city || '#notfound',
+                country: user.country || '#notfound',
+                countryCode: user.countryCode || '#notfound'
+            }
+            return db.ref('users/' + id)
+                .set(u)
+                .then(() => {
+                    console.log(`user ${id} updated!`)
+                })
+        },
+        updatePin: (context, pin) => {
+            const id = pin.id
+            const p = {
+                coordinates: pin.coordinates,
+                message: pin.message,
+                user: pin.user.id,
+                created: new Date(pin.created).toISOString(),
+                city: pin.city || '#notfound',
+                country: pin.country || '#notfound',
+                countryCode: pin.countryCode || '#notfound'
+            }
+            return db.ref('pins/' + id)
+                .set(p)
+                .then(() => {
+                    console.log(`pin ${id} updated!`)
+                })
+        },
     }
 }
