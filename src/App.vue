@@ -4,7 +4,7 @@
       <Loader v-if="!loaded" />
       <div class="container" v-else>
         <div class="view">
-          <router-view />
+          <router-view v-if="ready" />
         </div>
         <footer>
           <a target="_blank" class="exte-medium todo-logo" href="https://todo.to.it/">
@@ -23,6 +23,7 @@ export default {
   components: { Loader },
   data() {
     return {
+      mapsKey: process.env.VUE_APP_MAPS_KEY,
       loaded: false
     };
   },
@@ -42,7 +43,21 @@ export default {
   },
   methods: {
     init() {
-      this.loaded = true;
+      this.loaded = true
+    },
+    includeGmapsScript() {
+      if (document.getElementsByClassName("gm-src").length)
+        return Promise.resolve();
+      return new Promise(resolve => {
+        let script = document.createElement("script");
+        script.classList.add("gm-src");
+        script.onload = () => {
+          resolve();
+        };
+        script.async = true;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${this.mapsKey}&libraries=places,geometry`;
+        document.head.appendChild(script);
+      });
     }
   }
 };
@@ -56,9 +71,8 @@ export default {
 }
 
 .container {
-  display: flex;
+  height: 100%;
   width: 100%;
-  justify-content: center;
 }
 
 .container > footer {
