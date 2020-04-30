@@ -4,8 +4,9 @@ import router from './router'
 import store from './store'
 import VueMq from 'vue-mq'
 
-import './assets/css/style.scss'
+import './assets/css/grid.scss'
 import './assets/css/transitions.scss'
+import './assets/css/style.scss'
 
 Vue.use(VueMq, {
   breakpoints: {
