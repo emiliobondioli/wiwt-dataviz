@@ -5,8 +5,8 @@
         <p class="exte-large">
           <img src="@/assets/icons/bubble.svg" class="category-icon" />
         </p>
-        <label class="exte-small">total</label>
         <p class="value expa-large">{{planets.length}}</p>
+        <label class="exte-small">PLANETS</label>
       </section>
     </div>
     <div class="wrapper">
@@ -14,8 +14,8 @@
         <p class="exte-large">
           <img src="@/assets/icons/pin.svg" class="category-icon" />
         </p>
-        <label class="exte-small">total</label>
         <p class="value expa-large">{{stars.length}}</p>
+        <label class="exte-small">STARS</label>
       </section>
     </div>
   </div>
@@ -25,10 +25,10 @@
 export default {
   computed: {
     planets() {
-      return this.$store.state.users;
+      return this.$store.state.planets;
     },
     stars() {
-      return this.$store.state.pins;
+      return this.$store.state.stars;
     }
   }
 };
@@ -50,14 +50,13 @@ export default {
       text-align: center;
     }
     h3 {
-        color: $col-green;
+      color: $col-green;
     }
     label {
-        text-transform: uppercase;
+      text-transform: uppercase;
       color: $col-green;
       display: block;
       margin: 0.5rem 0;
-      border-bottom: 2px solid $col-green;
       padding-bottom: 0.5rem;
     }
   }

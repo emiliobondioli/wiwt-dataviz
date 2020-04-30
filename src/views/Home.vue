@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <DataInfo />
+    <TotalCallouts />
     <TimeSeries v-if="ready" />
   </div>
 </template>
@@ -8,11 +8,11 @@
 <script>
 import SingleLoader from "@/components/SingleLoader";
 import TimeSeries from "@/components/TimeSeries/";
-import DataInfo from "@/components/DataInfo/";
+import TotalCallouts from "@/components/TotalCallouts/";
 
 export default {
   name: "Home",
-  components: { Loader: SingleLoader, TimeSeries, DataInfo },
+  components: { Loader: SingleLoader, TimeSeries, TotalCallouts },
   computed: {
     ready() {
       return this.$store.state.ready;
