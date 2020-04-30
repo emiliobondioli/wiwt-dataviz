@@ -41,20 +41,20 @@ const vuex = new Vuex.Store({
     ...store.actions,
     init: context => {
       return context.dispatch('firebaseAuth')
-        .then(() => context.dispatch('getUsers'))
-        .then(() => context.dispatch('getPins'))
+        .then(() => context.dispatch('getPlanets'))
+        .then(() => context.dispatch('getStars'))
         .then(() => context.commit("SET_READY", true))
     }
   },
 
   getters: {
-    getUserPin: (state) => (id) => {
-      return state.stars.find(pin => pin.user.id === id)
+    getPlanetStar: (state) => (id) => {
+      return state.stars.find(star => star.planet.id === id)
     },
-    getUser: (state) => (id) => {
+    getPlanet: (state) => (id) => {
       return state.planets.find(planet => planet.id === id)
     },
-    getUserByRef: (state) => (ref) => {
+    getPlanetByRef: (state) => (ref) => {
       let id = ref
       if (id.includes('/')) id = ref.split('/')[1]
       return state.planets.find(planet => planet.id === id)
