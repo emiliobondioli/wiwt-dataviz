@@ -170,7 +170,7 @@ export default {
     createAxes(el) {
       el.append("g")
         .attr("transform", "translate(0," + this.height + ")")
-        .call(d3.axisBottom(this.scaleX).tickSize(-this.height));
+        .call(d3.axisBottom(this.scaleX).ticks(6).tickSize(-this.height));
     }
   }
 };
