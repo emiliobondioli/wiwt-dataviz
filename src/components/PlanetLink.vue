@@ -1,10 +1,17 @@
 <template>
   <div class="planet-link">
     <div class="start">
-      <img src="@/assets/icons/bubble.svg" svg-inline />
+      <img src="@/assets/icons/bubble.svg" svg-inline class="cat-icon"/>
       <p>
-        <span class="city" v-if="city">{{ city }},</span>
-        <span class="country" v-if="city">{{country}}</span>
+        <span class="city" v-if="start.city">{{ start.city }},</span>
+        <span class="country" v-if="start.country">{{start.country}}</span>
+      </p>
+    </div>
+    <div class="end" v-if="end">
+      <img src="@/assets/icons/pin.svg" svg-inline class="cat-icon"/>
+      <p>
+        <span class="city" v-if="end.city">{{ end.city }},</span>
+        <span class="country" v-if="end.country">{{end.country}}</span>
       </p>
     </div>
   </div>
@@ -19,29 +26,52 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-      start: null,
-      end: null
-    };
-  },
   computed: {
-    pin() {
-      return this.$store.getters.getUserPin(this.planet.id);
+    star() {
+      return this.$store.getters.getPlanetStar(this.planet.id);
     },
-    city() {
-      if (!this.planet.city || this.planet.city === "#notfound") return "";
-      return this.planet.city;
+    start() {
+      return {
+        city:
+          !this.planet.city || this.planet.city === "#notfound"
+            ? ""
+            : this.planet.city,
+        country:
+          !this.planet.country || this.planet.country === "#notfound"
+            ? ""
+            : this.planet.country
+      };
     },
-    country() {
-      if (!this.planet.country || this.planet.country === "#notfound")
-        return "";
-      return this.planet.country;
+    end() {
+      if (!this.star) return null;
+      return {
+        city:
+          !this.star.city || this.star.city === "#notfound"
+            ? ""
+            : this.star.city,
+        country:
+          !this.star.country || this.star.country === "#notfound"
+            ? ""
+            : this.star.country
+      };
     }
-  },
-  mounted() {}
+  }
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.planet-link {
+  display: flex;
+  justify-content: space-between;
+  .cat-icon {
+    height: 2rem;
+  }
+  .city,
+  .country {
+    font-size: 0.8rem;
+  }
+  .end {
+    text-align: right;
+  }
+}
 </style>

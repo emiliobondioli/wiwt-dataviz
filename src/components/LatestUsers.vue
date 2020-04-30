@@ -39,7 +39,7 @@ export default {
       return this.$store.state.planets
         .slice()
         .reverse()
-        .slice(0, 10);
+        .slice(0, 20);
     }
   },
   mounted() {},
@@ -49,6 +49,7 @@ export default {
 
 <style lang="scss">
 .latest-planets {
+  user-select: none;
   position: relative;
   ul {
     padding: 1rem;
@@ -76,7 +77,7 @@ export default {
   .blur {
     background-color: rgba($col-dark, 0.5);
     background: linear-gradient(to bottom, $col-dark, rgba($col-dark, 0));
-    height: 2rem;
+    height: 2.2rem;
     width: 100%;
     position: absolute;
     left: 0;
