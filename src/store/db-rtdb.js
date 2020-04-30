@@ -11,11 +11,13 @@ const pinsRef = db.ref('pins')
 function prepareUser(context, snap) {
     const user = snap.val()
     user.id = snap.key
+    user.created = new Date(user.created)
     return user
 }
 function preparePin(context, snap) {
     const pin = snap.val()
     pin.id = snap.key
+    pin.created = new Date(pin.created)
     pin.user = context.getters.getUser(pin.user)
     return pin
 }
@@ -55,7 +57,7 @@ export const store = {
                     const user = prepareUser(context, s)
                     users.push(user)
                 });
-                context.commit('SET_USERS', users)
+                context.commit('SET_PLANETS', users)
             })
         },
         getPins: context => {
@@ -65,7 +67,7 @@ export const store = {
                     const pin = preparePin(context, s)
                     pins.push(pin)
                 });
-                context.commit('SET_PINS', pins)
+                context.commit('SET_STARS', pins)
             })
         }
     }

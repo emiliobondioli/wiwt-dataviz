@@ -15,7 +15,7 @@
 
 <script>
 import * as d3 from "d3";
-const STEPS = 2
+const STEPS = 2;
 
 export default {
   data() {
@@ -26,51 +26,29 @@ export default {
   },
   computed: {
     planets() {
-      return this.$store.state.users.map(u => {
-        return { ...u, created: new Date(u.created) };
-      });
+      return this.$store.state.planets;
     },
     stars() {
-      return this.$store.state.pins.map(u => {
-        return { ...u, created: new Date(u.created) };
-      });
+      return this.$store.state.stars;
     },
-    range() {
-      const sorted = this.planets.slice().sort((a, b) => {
-        return a.created - b.created;
-      });
-      const start = sorted[0].created;
-      const end = sorted[sorted.length - 1].created;
-      const range = d3.timeHour.range(start, end, STEPS);
-      return range;
+    planetsTimeSeries() {
+      return this.$store.getters.planetsTimeSeries(STEPS);
     },
-    planetTimeSeries() {
-      const planetSeries = this.range.map((d, i) => {
-        return {
-          date: d,
-          value: this.planets.filter(u => u.created - d <= 0).length
-        };
-      });
-      return planetSeries;
-    },
-    starTimeSeries() {
-      const starSeries = this.range.map((d, i) => {
-        return {
-          date: d,
-          value: this.stars.filter(p => p.created - d <= 0).length
-        };
-      });
-      return starSeries;
+    starsTimeSeries() {
+      return this.$store.getters.starsTimeSeries(STEPS);
     }
   },
   mounted() {
+    this.bisectDate = d3.bisector(function(d) {
+      return d.date;
+    }).left;
     this.createGraph();
   },
   methods: {
     highlight(e) {
       this.highlighted = e.id;
       const values =
-        e.id === "planets" ? this.planetTimeSeries : this.starTimeSeries;
+        e.id === "planets" ? this.planetsTimeSeries : this.starsTimeSeries;
       const x = this.scaleX.invert(d3.mouse(d3.event.target)[0]);
       const i = this.bisectDate(values, x, 1);
       this.tooltip = {
@@ -86,30 +64,17 @@ export default {
         })
       };
       d3.event.stopPropagation();
-      //console.log(d3.event, e);
     },
     disableHighlight(e) {
-      //console.log(d3.event.type, e.id)
       this.tooltip = null;
       this.highlighted = null;
       d3.event.stopPropagation();
-      //console.log(e);
     },
     createGraph() {
-      const colors = {
-        planets: "#02E19F",
-        stars: "#373540"
-      };
-
-      this.bisectDate = d3.bisector(function(d) {
-        return d.date;
-      }).left;
-
       const sources = [
-        { values: this.planetTimeSeries, id: "planets" },
-        { values: this.starTimeSeries, id: "stars" }
+        { values: this.planetsTimeSeries, id: "planets" },
+        { values: this.starsTimeSeries, id: "stars" }
       ];
-
       const dimensions = this.$refs.graph.getBoundingClientRect();
       const svg = d3
         .select(this.$refs.graph)
@@ -121,35 +86,31 @@ export default {
 
       const container = svg.append("g").attr("class", "container");
 
-      // Add X axis --> it is a date format
       const x = d3
         .scaleTime()
         .domain(
-          d3.extent(this.planetTimeSeries, function(d) {
+          d3.extent(this.planetsTimeSeries, function(d) {
             return d.date;
           })
         )
         .range([0, dimensions.width - 100]);
+      this.scaleX = x;
+
       svg
         .append("g")
         .attr("transform", "translate(0," + dimensions.height + ")")
         .call(d3.axisBottom(x));
 
-      // Add Y axis
       const y = d3
         .scaleLinear()
         .domain([
           0,
-          d3.max(this.planetTimeSeries, function(d) {
+          d3.max(this.planetsTimeSeries, function(d) {
             return d.value;
           }) + 50
         ])
         .range([dimensions.height, 0]);
-
-      this.scaleX = x;
       this.scaleY = y;
-
-      //svg.append("g").call(d3.axisLeft(y));
 
       const area = d3
         .area()
@@ -167,9 +128,7 @@ export default {
         .data(sources)
         .enter()
         .append("g")
-        .attr("class", function(d) {
-          return `area ${d.id}`;
-        });
+        .attr("class", d => `area ${d.id}`);
 
       source
         .append("path")
