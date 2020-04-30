@@ -21,7 +21,9 @@ export default {
   data() {
     return {
       tooltip: null,
-      highlighted: null
+      highlighted: null,
+      width: 0,
+      height: 0
     };
   },
   computed: {
@@ -76,6 +78,10 @@ export default {
         { values: this.starsTimeSeries, id: "stars" }
       ];
       const dimensions = this.$refs.graph.getBoundingClientRect();
+      this.width = dimensions.width;
+      this.height = dimensions.height;
+      this.createScales();
+
       const svg = d3
         .select(this.$refs.graph)
         .append("svg")
@@ -83,45 +89,16 @@ export default {
         .attr("height", dimensions.height + 100)
         .append("g")
         .attr("transform", "translate(50,0)");
-
       const container = svg.append("g").attr("class", "container");
 
-      const x = d3
-        .scaleTime()
-        .domain(
-          d3.extent(this.planetsTimeSeries, function(d) {
-            return d.date;
-          })
-        )
-        .range([0, dimensions.width - 100]);
-      this.scaleX = x;
-
-      svg
-        .append("g")
-        .attr("transform", "translate(0," + dimensions.height + ")")
-        .call(d3.axisBottom(x));
-
-      const y = d3
-        .scaleLinear()
-        .domain([
-          0,
-          d3.max(this.planetsTimeSeries, function(d) {
-            return d.value;
-          }) + 50
-        ])
-        .range([dimensions.height, 0]);
-      this.scaleY = y;
+      this.createAxes(svg);
 
       const area = d3
         .area()
         .curve(d3.curveMonotoneX)
-        .x(function(d) {
-          return x(d.date);
-        })
-        .y0(y(0))
-        .y1(function(d) {
-          return y(d.value);
-        });
+        .x(d => this.scaleX(d.date))
+        .y0(this.scaleY(0))
+        .y1(d => this.scaleY(d.value));
 
       const source = container
         .selectAll(".area")
@@ -137,6 +114,33 @@ export default {
         })
         .on("mousemove", this.highlight)
         .on("mouseleave", this.disableHighlight);
+    },
+    createScales() {
+      const x = d3
+        .scaleTime()
+        .domain(
+          d3.extent(this.planetsTimeSeries, function(d) {
+            return d.date;
+          })
+        )
+        .range([0, this.width - 100]);
+      this.scaleX = x;
+
+      const y = d3
+        .scaleLinear()
+        .domain([
+          0,
+          d3.max(this.planetsTimeSeries, function(d) {
+            return d.value;
+          }) + 50
+        ])
+        .range([this.height, 0]);
+      this.scaleY = y;
+    },
+    createAxes(el) {
+      el.append("g")
+        .attr("transform", "translate(0," + this.height + ")")
+        .call(d3.axisBottom(this.scaleX));
     }
   }
 };
