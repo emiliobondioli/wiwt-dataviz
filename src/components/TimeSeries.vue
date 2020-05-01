@@ -39,7 +39,8 @@ export default {
       cursor: null,
       highlighted: null,
       width: 0,
-      height: 0
+      height: 0,
+      _sources: []
     };
   },
   computed: {
@@ -48,6 +49,11 @@ export default {
     },
     stars() {
       return this.$store.state.stars;
+    }
+  },
+  watch: {
+    sources(val, old) {
+      this.updateGraph();
     }
   },
   mounted() {
@@ -59,10 +65,10 @@ export default {
         return d.value;
       }) + 25;
     this.createGraph();
-    window.addEventListener("resize", this.updateGraph.bind(this));
+    window.addEventListener("resize", this.resizeGraph.bind(this));
   },
   methods: {
-    updateGraph() {
+    resizeGraph() {
       if (!this.$refs.graph) return;
       const bounds = this.$refs.graph.getBoundingClientRect();
       this.svg.attr("width", bounds.width).attr("height", bounds.height + 100);
@@ -110,9 +116,8 @@ export default {
       const dimensions = this.$refs.graph.getBoundingClientRect();
       this.width = dimensions.width;
       this.height = dimensions.height;
-      this.createScales();
 
-      const svg = d3
+      this.svg = d3
         .select(this.$refs.graph)
         .append("svg")
         .attr("width", dimensions.width)
@@ -120,41 +125,33 @@ export default {
         .attr("preserveAspectRatio", "xMaxYMin meet")
         .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height + 100}`);
 
-      this.svg = svg;
+      this.graph = this.svg.append("g").attr("transform", "translate(10,0)");
+      const container = this.graph.append("g").attr("class", "container");
 
-      const graph = svg.append("g").attr("transform", "translate(10,0)");
-      const container = graph.append("g").attr("class", "container");
-
-      this.createAxes(graph);
-
-      const area = d3
-        .area()
-        .curve(d3.curveMonotoneX)
-        .x(d => this.scaleX(d.date))
-        .y0(d =>
-          this.streamgraph
-            ? this.scaleY(-d.value) - this.padding
-            : this.scaleY(0)
-        )
-        .y1(d => this.scaleY(d.value) + this.padding);
-
-      const source = container
+      this.createScales();
+      this.createAxes(this.graph);
+      this.areas = container
         .selectAll(".area")
         .data(this.sources)
-        .enter()
-        .append("g")
-        .attr("class", d => `area ${d.id}`);
-
-      source
-        .append("path")
-        .attr("d", function(d) {
-          return area(d.values);
-        })
+        .join("path")
+        .attr("class", d => `area ${d.id}`)
+        .attr("d", d => {
+          return this.area(d.values);
+        });
+      this.areas
         .on("mousemove", this.highlight)
         .on("mouseleave", this.disableHighlight)
         .on("touchstart", this.highlight)
         .on("touchmove", this.highlight)
         .on("touchend", this.disableHighlight);
+    },
+    updateGraph() {
+      this.createScales();
+      this.createAxes(this.graph);
+      this.areas
+        .data(this.sources, d => d.id)
+        .transition()
+        .attr("d", d => this.area(d.values));
     },
     createScales() {
       const x = d3
@@ -172,10 +169,26 @@ export default {
         .domain([this.streamgraph ? -this.yDomain : 0, this.yDomain])
         .range([this.height, 0]);
       this.scaleY = y;
+
+      this.area = d3
+        .area()
+        .curve(d3.curveMonotoneX)
+        .x(d => {
+          return this.scaleX(d.date);
+        })
+        .y0(d =>
+          this.streamgraph
+            ? this.scaleY(-d.value) - this.padding
+            : this.scaleY(0)
+        )
+        .y1(d => this.scaleY(d.value) + this.padding);
     },
     createAxes(el) {
+      el.select(".axes").remove();
+
       const axis = el
         .append("g")
+        .attr("class", "axes")
         .attr("transform", "translate(0," + this.height + ")")
         .call(
           d3
