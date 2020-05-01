@@ -39,7 +39,7 @@ export default {
       return this.$store.state.planets
         .slice()
         .reverse()
-        .slice(0, 20);
+        .filter(p => moment().diff(moment(p.date), "days") <= 7);
     }
   },
   mounted() {},
