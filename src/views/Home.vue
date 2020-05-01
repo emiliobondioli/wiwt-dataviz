@@ -128,6 +128,9 @@ h2 {
   overflow: visible;
   & > * {
     padding: 2rem;
+    @media screen and (max-width: $mqTablet) {
+      padding: 1rem;
+    }
   }
 }
 .title-selector {
@@ -186,6 +189,9 @@ h2 {
 .intro {
   text-align: center;
   margin-bottom: 2rem;
+  @media screen and (max-width: $mqTablet) {
+    margin-bottom: 1rem;
+  }
   h1 {
     margin: 0.5rem 0;
   }
