@@ -6,17 +6,19 @@
     </section>
     <TotalCallouts class="callouts" />
     <TimeSeries :sources="areaSources" class="total-series" />
-    <h2>New users this week</h2>
-    <div class="row">
-      <LatestUsers />
-      <TimeSeries
-        class="col-fill growth-series"
-        :sources="streamSources"
-        :streamgraph="true"
-        :ticks="6"
-        :padding="3"
-      />
-    </div>
+    <section class="week-info">
+      <h2>New users this week</h2>
+      <div class="row">
+        <LatestUsers />
+        <TimeSeries
+          class="col-fill growth-series"
+          :sources="streamSources"
+          :streamgraph="true"
+          :ticks="6"
+          :padding="3"
+        />
+      </div>
+    </section>
   </div>
 </template>
 
@@ -25,6 +27,7 @@ import SingleLoader from "@/components/SingleLoader";
 import TimeSeries from "@/components/TimeSeries";
 import TotalCallouts from "@/components/TotalCallouts";
 import LatestUsers from "@/components/LatestUsers";
+import moment from "moment";
 
 export default {
   name: "Home",
@@ -45,12 +48,16 @@ export default {
       return this.$store.getters.starsTimeSeries(2);
     },
     planetsGrowth() {
-      const series = this.$store.getters.planetsTimeSeries(4);
-      return this.$store.getters.getInstantIncreases(series);
+      const series = this.$store.getters.planetsTimeSeries(6);
+      return this.$store.getters
+        .getInstantIncreases(series)
+        .filter(s => moment().diff(moment(s.date), "days") <= 7);
     },
     starsGrowth() {
-      const series = this.$store.getters.starsTimeSeries(4);
-      return this.$store.getters.getInstantIncreases(series);
+      const series = this.$store.getters.starsTimeSeries(6);
+      return this.$store.getters
+        .getInstantIncreases(series)
+        .filter(s => moment().diff(moment(s.date), "days") <= 7);
     },
     areaSources() {
       return [
@@ -68,11 +75,16 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+h2 {
+  margin-bottom: 0.5rem;
+}
 .home {
-  padding: 2rem;
   width: 100%;
   overflow: visible;
+  & > * {
+    padding: 2rem;
+  }
 }
 .callouts {
   width: 50%;
@@ -80,6 +92,12 @@ export default {
     width: 100%;
   }
   margin: 0 auto;
+}
+.week-info {
+  background-color: #282631;
+  & > .row {
+    max-height: 250px;
+  }
 }
 .total-series {
   margin-bottom: 3rem;

@@ -56,7 +56,7 @@ export default {
     @media screen and (max-width: 360px) {
       padding: 0rem;
     }
-    height: 200px;
+    height: 100%;
     overflow: auto;
     margin: 0;
     li {
@@ -75,8 +75,7 @@ export default {
     }
   }
   .blur {
-    background-color: rgba($col-dark, 0.5);
-    background: linear-gradient(to bottom, $col-dark, rgba($col-dark, 0));
+    background: linear-gradient(to bottom, #282631, rgba(#282631, 0));
     height: 2.2rem;
     width: 100%;
     position: absolute;
@@ -85,7 +84,7 @@ export default {
     &.bottom {
       top: unset;
       bottom: -2px;
-      background: linear-gradient(to top, $col-dark, rgba($col-dark, 0));
+      background: linear-gradient(to top, #282631, rgba(#282631, 0));
     }
   }
 }
