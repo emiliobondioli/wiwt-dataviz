@@ -121,9 +121,9 @@ export default {
         .select(this.$refs.graph)
         .append("svg")
         .attr("width", dimensions.width)
-        .attr("height", dimensions.height + 100)
+        .attr("height", dimensions.height + 20)
         .attr("preserveAspectRatio", "xMaxYMin meet")
-        .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height + 100}`);
+        .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height + 20}`);
 
       this.graph = this.svg.append("g").attr("transform", "translate(10,0)");
       const container = this.graph.append("g").attr("class", "container");
@@ -211,6 +211,7 @@ export default {
     height: 100%;
     width: 100%;
     color: $col-white;
+    min-height: 300px;
   }
   .overlay {
     position: absolute;

@@ -168,9 +168,9 @@ h2 {
 .latest-planets {
   height: 250px;
 }
-.total-series {
+/* .total-series {
   height: 300px;
-}
+} */
 .growth-series {
   margin-left: 2rem;
   @media screen and (max-width: $mqMobile) {
