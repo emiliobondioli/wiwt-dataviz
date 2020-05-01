@@ -5,7 +5,11 @@
       <p>Self-isolating is the right thing to do during the pandemic. But it also makes our favorite places feel like a constellation of faraway stars, and we wish we could just think about the future and already be there. Stay safe and we will get there.</p>
     </section>
     <TotalCallouts class="callouts" />
-    <TimeSeries :sources="areaSources" class="total-series" />
+    <TimeSeries
+      :sources="areaSources"
+      :ticks="this.$mq.includes('sm') ? 5 : false"
+      class="total-series"
+    />
     <section class="week-info">
       <div class="title-selector">
         <h2>New users this week</h2>
@@ -28,7 +32,7 @@
           class="col-fill growth-series"
           :sources="streamSources"
           :streamgraph="true"
-          :ticks="6"
+          :ticks="this.$mq.includes('sm') ? 5 : 6"
           :padding="3"
         />
       </div>
@@ -174,6 +178,8 @@ h2 {
 .growth-series {
   margin-left: 2rem;
   @media screen and (max-width: $mqMobile) {
+    margin-left: 0;
+    margin-bottom: 1rem;
     height: 250px;
   }
 }

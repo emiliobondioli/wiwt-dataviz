@@ -259,9 +259,6 @@ export default {
       stroke-dasharray: 4;
     }
     text {
-      @media screen and (max-width: $mqMobile) {
-        display: none;
-      }
       fill: $col-darkgray;
     }
   }
