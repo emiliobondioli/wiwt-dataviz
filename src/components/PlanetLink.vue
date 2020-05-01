@@ -3,14 +3,14 @@
     <div class="start">
       <img src="@/assets/icons/bubble.svg" svg-inline class="cat-icon"/>
       <p>
-        <span class="city" v-if="start.city">{{ start.city }},</span>
+        <span class="city" v-if="start.city">{{ start.city }},&nbsp;</span>
         <span class="country" v-if="start.country">{{start.country}}</span>
       </p>
     </div>
     <div class="end" v-if="end">
       <img src="@/assets/icons/pin.svg" svg-inline class="cat-icon"/>
       <p>
-        <span class="city" v-if="end.city">{{ end.city }},</span>
+        <span class="city" v-if="end.city">{{ end.city }},&nbsp;</span>
         <span class="country" v-if="end.country">{{end.country}}</span>
       </p>
     </div>
@@ -72,6 +72,7 @@ export default {
   }
   .end {
     text-align: right;
+    margin-left: 1rem;
   }
 }
 </style>

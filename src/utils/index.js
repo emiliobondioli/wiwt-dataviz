@@ -1,6 +1,6 @@
 export function sortByDate(items) {
     return items.slice().sort((a, b) => {
-        return a.created - b.created;
+        return a.date - b.date;
     });
 }
 

@@ -60,8 +60,8 @@ const vuex = new Vuex.Store({
       return state.planets.find(planet => planet.id === id)
     },
     range: (state, getters) => (steps) => {
-      const start = state.planets[0].created;
-      const end = state.planets[state.planets.length - 1].created;
+      const start = state.planets[0].date;
+      const end = state.planets[state.planets.length - 1].date;
       const range = d3.timeHour.range(start, end, steps);
       return range;
     },
@@ -75,10 +75,16 @@ const vuex = new Vuex.Store({
       const series = getters.range(steps).map((d, i) => {
         return {
           date: d,
-          value: values.filter(u => u.created - d <= 0).length,
+          value: values.filter(u => u.date - d <= 0).length,
         };
       });
       return series;
+    },
+    getInstantIncreases: (state, getters) => (series) => {
+      return series.map((s, i) => {
+        if (i === 0) return s;
+        return { ...s, value: s.value - series[i - 1].value }
+      });
     }
   }
 })

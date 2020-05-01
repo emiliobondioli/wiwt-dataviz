@@ -12,13 +12,13 @@ const starsRef = db.ref('pins')
 function preparePlanet(context, snap) {
     const planet = snap.val()
     planet.id = snap.key
-    planet.created = new Date(planet.created)
+    planet.date = new Date(planet.created)
     return planet
 }
 function prepareStar(context, snap) {
     const star = snap.val()
     star.id = snap.key
-    star.created = new Date(star.created)
+    star.date = new Date(star.created)
     star.planet = context.getters.getPlanet(star.user)
     return star
 }
