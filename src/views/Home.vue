@@ -5,11 +5,17 @@
       <p>Self-isolating is the right thing to do during the pandemic. But it also makes our favorite places feel like a constellation of faraway stars, and we wish we could just think about the future and already be there. Stay safe and we will get there.</p>
     </section>
     <TotalCallouts class="callouts" />
-    <TimeSeries />
+    <TimeSeries :sources="areaSources" class="total-series" />
     <h2>New users this week</h2>
     <div class="row">
       <LatestUsers />
-      <GrowthStream class="col-fill" />
+      <TimeSeries
+        class="col-fill growth-series"
+        :sources="streamSources"
+        :streamgraph="true"
+        :ticks="6"
+        :padding="3"
+      />
     </div>
   </div>
 </template>
@@ -19,7 +25,6 @@ import SingleLoader from "@/components/SingleLoader";
 import TimeSeries from "@/components/TimeSeries";
 import TotalCallouts from "@/components/TotalCallouts";
 import LatestUsers from "@/components/LatestUsers";
-import GrowthStream from "@/components/GrowthStream";
 
 export default {
   name: "Home",
@@ -27,12 +32,37 @@ export default {
     Loader: SingleLoader,
     TimeSeries,
     TotalCallouts,
-    LatestUsers,
-    GrowthStream
+    LatestUsers
   },
   computed: {
     ready() {
       return this.$store.state.ready;
+    },
+    planetsTimeSeries() {
+      return this.$store.getters.planetsTimeSeries(2);
+    },
+    starsTimeSeries() {
+      return this.$store.getters.starsTimeSeries(2);
+    },
+    planetsGrowth() {
+      const series = this.$store.getters.planetsTimeSeries(4);
+      return this.$store.getters.getInstantIncreases(series);
+    },
+    starsGrowth() {
+      const series = this.$store.getters.starsTimeSeries(4);
+      return this.$store.getters.getInstantIncreases(series);
+    },
+    areaSources() {
+      return [
+        { values: this.planetsTimeSeries, id: "planets" },
+        { values: this.starsTimeSeries, id: "stars" }
+      ];
+    },
+    streamSources() {
+      return [
+        { values: this.planetsGrowth, id: "planets" },
+        { values: this.starsGrowth, id: "stars" }
+      ];
     }
   }
 };
@@ -51,8 +81,12 @@ export default {
   }
   margin: 0 auto;
 }
-.time-series {
-  margin-bottom: 2rem;
+.total-series {
+  margin-bottom: 3rem;
+  height: 300px;
+}
+.growth-series {
+  margin-left: 2rem;
 }
 .intro {
   text-align: center;
