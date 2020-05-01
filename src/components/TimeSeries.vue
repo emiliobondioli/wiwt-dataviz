@@ -15,6 +15,24 @@ import * as d3 from "d3";
 const STEPS = 2;
 
 export default {
+  props: {
+    sources: {
+      type: Array,
+      required: true
+    },
+    streamgraph: {
+      type: Boolean,
+      default: false
+    },
+    ticks: {
+      type: Number,
+      default: null
+    },
+    padding: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
       tooltip: null,
@@ -30,12 +48,6 @@ export default {
     },
     stars() {
       return this.$store.state.stars;
-    },
-    planetsTimeSeries() {
-      return this.$store.getters.planetsTimeSeries(STEPS);
-    },
-    starsTimeSeries() {
-      return this.$store.getters.starsTimeSeries(STEPS);
     }
   },
   mounted() {
@@ -43,7 +55,7 @@ export default {
       return d.date;
     }).left;
     this.yDomain =
-      d3.max(this.planetsTimeSeries, function(d) {
+      d3.max(this.sources[0].values, function(d) {
         return d.value;
       }) + 25;
     this.createGraph();
@@ -58,8 +70,7 @@ export default {
     highlight(e) {
       const bounds = this.$el.getBoundingClientRect();
       this.highlighted = e.id;
-      const values =
-        e.id === "planets" ? this.planetsTimeSeries : this.starsTimeSeries;
+      const values = this.sources.find(s => s.id === e.id).values;
       const mouse = d3.mouse(d3.event.target);
       const scaledX = this.scaleX.invert(mouse[0]);
       const i = this.bisectDate(values, scaledX, 1);
@@ -72,7 +83,7 @@ export default {
         y: 0,
         value,
         label: e.id,
-        time: x.toLocaleString("default", {
+        time: scaledX.toLocaleString("default", {
           month: "short",
           day: "numeric",
           hour: "numeric",
@@ -96,10 +107,6 @@ export default {
       return { transform: `translate(${coords.x}px, ${coords.y}px)` };
     },
     createGraph() {
-      const sources = [
-        { values: this.planetsTimeSeries, id: "planets" },
-        { values: this.starsTimeSeries, id: "stars" }
-      ];
       const dimensions = this.$refs.graph.getBoundingClientRect();
       this.width = dimensions.width;
       this.height = dimensions.height;
@@ -124,12 +131,16 @@ export default {
         .area()
         .curve(d3.curveMonotoneX)
         .x(d => this.scaleX(d.date))
-        .y0(this.scaleY(0))
-        .y1(d => this.scaleY(d.value));
+        .y0(d =>
+          this.streamgraph
+            ? this.scaleY(-d.value) - this.padding
+            : this.scaleY(0)
+        )
+        .y1(d => this.scaleY(d.value) + this.padding);
 
       const source = container
         .selectAll(".area")
-        .data(sources)
+        .data(this.sources)
         .enter()
         .append("g")
         .attr("class", d => `area ${d.id}`);
@@ -149,7 +160,7 @@ export default {
       const x = d3
         .scaleTime()
         .domain(
-          d3.extent(this.planetsTimeSeries, function(d) {
+          d3.extent(this.sources[0].values, function(d) {
             return d.date;
           })
         )
@@ -158,14 +169,20 @@ export default {
 
       const y = d3
         .scaleLinear()
-        .domain([0, this.yDomain])
+        .domain([this.streamgraph ? -this.yDomain : 0, this.yDomain])
         .range([this.height, 0]);
       this.scaleY = y;
     },
     createAxes(el) {
-      el.append("g")
+      const axis = el
+        .append("g")
         .attr("transform", "translate(0," + this.height + ")")
-        .call(d3.axisBottom(this.scaleX).tickSize(-this.height));
+        .call(
+          d3
+            .axisBottom(this.scaleX)
+            .tickSize(-this.height)
+            .ticks(this.ticks)
+        );
     }
   }
 };
@@ -178,10 +195,7 @@ export default {
     width: 100%;
   }
   .graph {
-    height: 300px;
-    @media screen and (max-width: 360px) {
-      height: 200px;
-    }
+    height: 100%;
     width: 100%;
     color: $col-white;
   }
