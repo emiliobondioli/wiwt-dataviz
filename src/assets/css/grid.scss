@@ -1,6 +1,9 @@
 .row {
     display: flex;
     flex-direction: row;
+    &.v-center {
+        align-items: center;
+    }
     .col-4 {
         width: 33.3333%;
     }
@@ -16,7 +19,7 @@
     .col-fill {
         flex: 1;
     }
-    @media screen and (max-width: 360px) {
+    @media screen and (max-width: $mqMobile) {
         flex-direction: column;
         .col-4,
         .col-8,

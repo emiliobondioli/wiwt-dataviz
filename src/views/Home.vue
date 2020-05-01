@@ -35,6 +35,10 @@
     </section>
     <section class="world-info">
       <h2>Around the world</h2>
+      <div class="row v-center">
+        <TypeToggle v-model="worldItems" />
+        <WorldTotals class="col-4" :items="worldItems === 'planets' ? planets : stars" />
+      </div>
     </section>
   </div>
 </template>
@@ -44,6 +48,8 @@ import SingleLoader from "@/components/SingleLoader";
 import TimeSeries from "@/components/TimeSeries";
 import TotalCallouts from "@/components/TotalCallouts";
 import LatestUsers from "@/components/LatestUsers";
+import WorldTotals from "@/components/WorldTotals";
+import TypeToggle from "@/components/TypeToggle";
 import moment from "moment";
 
 export default {
@@ -52,16 +58,25 @@ export default {
     Loader: SingleLoader,
     TimeSeries,
     TotalCallouts,
-    LatestUsers
+    LatestUsers,
+    WorldTotals,
+    TypeToggle
   },
   data() {
     return {
-      growthAllTime: false
+      growthAllTime: false,
+      worldItems: "planets"
     };
   },
   computed: {
     ready() {
       return this.$store.state.ready;
+    },
+    planets() {
+      return this.$store.state.planets;
+    },
+    stars() {
+      return this.$store.state.stars;
     },
     planetsTimeSeries() {
       return this.$store.getters.planetsTimeSeries(2);
@@ -99,6 +114,9 @@ export default {
 
 <style lang="scss" scoped>
 h2 {
+  @media screen and (max-width: $mqTablet) {
+    text-align: center;
+  }
   margin-bottom: 0.5rem;
 }
 .home {
@@ -111,6 +129,15 @@ h2 {
 .title-selector {
   display: flex;
   justify-content: space-between;
+  @media screen and (max-width: $mqTablet) {
+    flex-direction: column;
+    .all-time {
+      text-align: center;
+      a:first-child {
+        margin-left: 0;
+      }
+    }
+  }
   .all-time {
     a {
       color: $col-darkgray;
@@ -125,7 +152,7 @@ h2 {
 .callouts {
   width: 50%;
   transition: all 0.5s;
-  @media screen and (max-width: 920px) {
+  @media screen and (max-width: $mqTablet) {
     width: 100%;
   }
   margin: 0 auto;
@@ -133,15 +160,22 @@ h2 {
 .week-info {
   background-color: #282631;
   & > .row {
-    max-height: 250px;
+    @media screen and (max-width: $mqMobile) {
+      flex-direction: column-reverse;
+    }
   }
 }
+.latest-planets {
+  height: 250px;
+}
 .total-series {
-  margin-bottom: 3rem;
   height: 300px;
 }
 .growth-series {
   margin-left: 2rem;
+  @media screen and (max-width: $mqMobile) {
+    height: 250px;
+  }
 }
 .intro {
   text-align: center;
