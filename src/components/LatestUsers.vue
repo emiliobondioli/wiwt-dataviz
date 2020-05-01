@@ -1,6 +1,6 @@
 <template>
   <section class="latest-planets">
-    <div class="blur"></div>
+    <FeatheredList>
     <ul class="planets">
       <li v-for="(planet, index) in latestPlanets" :key="index">
         <div class="info">
@@ -10,16 +10,17 @@
         <PlanetLink :planet="planet" />
       </li>
     </ul>
-    <div class="blur bottom"></div>
+    </FeatheredList>
   </section>
 </template>
 
 <script>
 import PlanetLink from "@/components/PlanetLink";
+import FeatheredList from '@/components/FeatheredList'
 import moment from "moment";
 
 export default {
-  components: { PlanetLink },
+  components: { PlanetLink, FeatheredList },
   data() {
     return {};
   },
@@ -51,13 +52,9 @@ export default {
 .latest-planets {
   user-select: none;
   position: relative;
+  height: 100%;
   ul {
-    padding: 1rem;
-    @media screen and (max-width: 360px) {
-      padding: 0rem;
-    }
-    height: 100%;
-    overflow: auto;
+    padding: 0;
     margin: 0;
     li {
       display: flex;
@@ -72,19 +69,6 @@ export default {
       .planet-link {
         flex: 1;
       }
-    }
-  }
-  .blur {
-    background: linear-gradient(to bottom, #282631, rgba(#282631, 0));
-    height: 2.2rem;
-    width: 100%;
-    position: absolute;
-    left: 0;
-    top: -2px;
-    &.bottom {
-      top: unset;
-      bottom: -2px;
-      background: linear-gradient(to top, #282631, rgba(#282631, 0));
     }
   }
 }
