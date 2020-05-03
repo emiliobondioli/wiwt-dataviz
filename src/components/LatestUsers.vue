@@ -62,9 +62,6 @@ export default {
       border-bottom: 1px solid $col-darkgray;
       .info {
         width: 8rem;
-        label {
-          color: $col-green;
-        }
       }
       .planet-link {
         flex: 1;
