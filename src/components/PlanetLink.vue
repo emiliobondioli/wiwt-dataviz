@@ -1,18 +1,22 @@
 <template>
   <div class="planet-link">
-    <div class="start">
-      <img src="@/assets/icons/bubble.svg" svg-inline class="cat-icon"/>
-      <p>
-        <span class="city" v-if="start.city">{{ start.city }},&nbsp;</span>
-        <span class="country" v-if="start.country">{{start.country}}</span>
-      </p>
-    </div>
-    <div class="end" v-if="end">
-      <img src="@/assets/icons/pin.svg" svg-inline class="cat-icon"/>
-      <p>
-        <span class="city" v-if="end.city">{{ end.city }},&nbsp;</span>
-        <span class="country" v-if="end.country">{{end.country}}</span>
-      </p>
+    <div class="link">
+      <div class="row split v-center no-stack">
+        <img src="@/assets/icons/planet.svg" svg-inline class="cat-icon" />
+        <div class="col-fill separator" v-if="end"></div>
+        <img src="@/assets/icons/star.svg" svg-inline class="cat-icon" v-if="end" />
+      </div>
+      <div class="row split v-center no-stack">
+        <p>
+          <span class="city" v-if="start.city">{{ start.city }},&nbsp;</span>
+          <span class="country" v-if="start.country">{{start.country}}</span>
+        </p>
+
+        <p v-if="end" class="end">
+          <span class="city" v-if="end.city">{{ end.city }},&nbsp;</span>
+          <span class="country" v-if="end.country">{{end.country}}</span>
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -65,6 +69,15 @@ export default {
   justify-content: space-between;
   .cat-icon {
     height: 2rem;
+    fill: $col-white;
+  }
+  .link {
+    width: 100%;
+  }
+  .separator {
+    height: 1px;
+    border-bottom: 2px dashed $col-white;
+    margin: 0 1rem;
   }
   .city,
   .country {
