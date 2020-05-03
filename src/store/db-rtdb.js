@@ -92,7 +92,7 @@ export const store = {
             const p = {
                 coordinates: star.coordinates,
                 message: star.message,
-                planet: star.planet.id,
+                user: star.planet.id,
                 created: new Date(star.created).toISOString(),
                 city: star.city || '#notfound',
                 country: star.country || '#notfound',

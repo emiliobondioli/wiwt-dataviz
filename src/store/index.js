@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { store } from './db-rtdb'
+import { geoDistance } from '@/utils'
 import * as d3 from 'd3'
 
 Vue.use(Vuex)
@@ -71,11 +72,11 @@ const vuex = new Vuex.Store({
     starsTimeSeries: (state, getters) => steps => {
       return getters.createTimeSeries(state.stars, steps)
     },
-    createTimeSeries: (state, getters) => (values, steps) => {
+    createTimeSeries: (state, getters) => (values, steps, iterator = v => v.length) => {
       const series = getters.range(steps).map((d, i) => {
         return {
           date: d,
-          value: values.filter(u => u.date - d <= 0).length,
+          value: iterator(values.filter(u => u.date - d <= 0)),
         };
       });
       return series;
@@ -85,6 +86,26 @@ const vuex = new Vuex.Store({
         if (i === 0) return s;
         return { ...s, value: s.value - series[i - 1].value }
       });
+    },
+    countryTotals: (state, getters) => items => {
+      return d3
+        .nest()
+        .key(function (d) {
+          if (d.country === "#notfound") return "Others";
+          return d.country;
+        })
+        .entries(items);
+    },
+    averageDistance: (state, gettes) => (stars) => {
+      return stars.map(s => {
+        const d = geoDistance(s.coordinates, s.planet.coordinates)
+        return d
+      }).reduce((total, dist) => {
+        return total + dist
+      }) / stars.length
+    },
+    computeDistance: (state, getters) => star => {
+      return geoDistance(star.coordinates, star.planet.coordinates)
     }
   }
 })
