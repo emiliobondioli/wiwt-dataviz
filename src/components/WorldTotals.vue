@@ -23,17 +23,8 @@ export default {
   },
   computed: {
     countries() {
-      console.log(this.items);
-      const groups = d3
-        .nest()
-        .key(function(d) {
-          if (d.country === "#notfound") return "Others";
-          return d.country;
-        })
-        .entries(this.items);
-      return groups
-        .sort((a, b) => b.values.length - a.values.length)
-        .slice(0, 10);
+      const groups = this.$store.getters.countryTotals(this.items);
+      return groups.sort((a, b) => b.values.length - a.values.length);
     }
   }
 };
@@ -42,6 +33,9 @@ export default {
 <style lang="scss" scoped>
 .world-totals {
   height: 400px;
+  @media screen and (max-width: $mqMobile) {
+    height: 210px;
+  }
   overflow: auto;
   .country {
     margin-bottom: 1rem;
