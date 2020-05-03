@@ -109,6 +109,38 @@ input[type="text"] {
   }
 }
 
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+label {
+  color: $col-green;
+}
+
+.tooltip {
+  margin-top: 1rem;
+  margin-left: 0;
+  padding: 0.5rem;
+  background-color: $col-dark;
+  min-width: 7rem;
+  label {
+    text-transform: uppercase;
+  }
+  p {
+    font-family: "GT America Expanded", Arial, Helvetica, sans-serif;
+    font-size: 1.5rem;
+  }
+  p.time {
+    font-family: "GT America Compressed Light", Arial, Helvetica, sans-serif;
+    margin-top: 0.36rem;
+    font-size: 0.9rem;
+  }
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

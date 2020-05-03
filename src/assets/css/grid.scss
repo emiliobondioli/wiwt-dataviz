@@ -4,6 +4,9 @@
     &.v-center {
         align-items: center;
     }
+    &.split {
+        justify-content: space-between;
+    }
     .col-4 {
         width: 33.3333%;
     }
@@ -20,7 +23,9 @@
         flex: 1;
     }
     @media screen and (max-width: $mqMobile) {
-        flex-direction: column;
+        &:not(.no-stack) {
+            flex-direction: column;
+        }
         .col-4,
         .col-8,
         .col-12 {
