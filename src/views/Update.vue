@@ -72,7 +72,7 @@ export default {
           const mutation =
             this.current === "planets" ? "SET_PLANET" : "SET_STAR";
           const action =
-            this.current === "planets" ? "updateUser" : "updatePin";
+            this.current === "planets" ? "updatePlanet" : "updateStar";
           this.$store.commit(mutation, {
             ...item,
             city,
