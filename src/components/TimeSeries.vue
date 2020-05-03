@@ -31,6 +31,14 @@ export default {
     padding: {
       type: Number,
       default: 0
+    },
+    scale: {
+      type: Function,
+      default: d3.scaleLinear
+    },
+    transform: {
+      type: Function,
+      default: d => d
     }
   },
   data() {
@@ -39,17 +47,8 @@ export default {
       cursor: null,
       highlighted: null,
       width: 0,
-      height: 0,
-      _sources: []
+      height: 0
     };
-  },
-  computed: {
-    planets() {
-      return this.$store.state.planets;
-    },
-    stars() {
-      return this.$store.state.stars;
-    }
   },
   watch: {
     sources(val, old) {
@@ -60,12 +59,12 @@ export default {
     this.bisectDate = d3.bisector(function(d) {
       return d.date;
     }).left;
-    this.yDomain =
-      d3.max(this.sources[0].values, function(d) {
-        return d.value;
-      }) + 25;
+
     this.createGraph();
     window.addEventListener("resize", this.resizeGraph.bind(this));
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.resizeGraph.bind(this));
   },
   methods: {
     resizeGraph() {
@@ -87,7 +86,7 @@ export default {
       this.tooltip = {
         x,
         y: 0,
-        value,
+        value: this.transform(value),
         label: e.id,
         time: scaledX.toLocaleString("default", {
           month: "short",
@@ -154,6 +153,11 @@ export default {
         .attr("d", d => this.area(d.values));
     },
     createScales() {
+      this.yDomain =
+        d3.max(this.sources[0].values, function(d) {
+          return d.value;
+        }) + 25;
+
       const x = d3
         .scaleTime()
         .domain(
@@ -164,8 +168,7 @@ export default {
         .range([0, this.width]);
       this.scaleX = x;
 
-      const y = d3
-        .scaleLinear()
+      const y = this.scale()
         .domain([this.streamgraph ? -this.yDomain : 0, this.yDomain])
         .range([this.height, 0]);
       this.scaleY = y;
@@ -211,14 +214,6 @@ export default {
     height: 100%;
     width: 100%;
     color: $col-white;
-    min-height: 300px;
-  }
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 10;
-    pointer-events: none;
   }
   .cursor {
     background-color: $col-white;
@@ -226,26 +221,7 @@ export default {
     border-right: 1px solid $col-white;
     height: 100%;
   }
-  .tooltip {
-    margin-top: 1rem;
-    margin-left: 0;
-    padding: 0.5rem;
-    background-color: $col-dark;
-    min-width: 7rem;
-    label {
-      color: $col-green;
-      text-transform: uppercase;
-    }
-    p {
-      font-family: "GT America Expanded", Arial, Helvetica, sans-serif;
-      font-size: 1.5rem;
-    }
-    p.time {
-      font-family: "GT America Compressed Light", Arial, Helvetica, sans-serif;
-      margin-top: 0.36rem;
-      font-size: 0.9rem;
-    }
-  }
+
   .domain {
     display: none;
     stroke: rgba($col-darkgray, 0.4);
